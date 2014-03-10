@@ -22,6 +22,7 @@ get '/' do
         @readme = md.render(File.read('Readme.md'))
         Dir.mkdir 'tmp' unless Dir.exist? 'tmp'
         File.open('tmp/Readme.html', 'w') {|f| f.write(@readme)}
+        flash.now[:info] = "Regenerated tmp/Readme.html"
         puts "Regenerated tmp/Readme.html"
     end
     haml :landing
