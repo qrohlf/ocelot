@@ -6,6 +6,13 @@ before do
     login User.find(session[:user]) if User.exists? session[:user]
 end
 
+# Require admin permissions for all tutor and course paths
+[%r{^/tutor.*}, %r{^/course.*}].each do |route|
+    before route do 
+        require_admin
+    end
+end
+
 get '/' do
     md = Redcarpet::Markdown.new(Redcarpet::Render::HTML, 
         autolink: true, 
@@ -28,7 +35,7 @@ get '/' do
 end
 
 get '/tutors' do
-    title "Tutors"
+    page_title "Tutors"
     @tutors = Tutor.all
     haml :tutors, {locals: {title: 'All Tutors'}}
 end
@@ -36,12 +43,12 @@ end
 get '/tutor/:id' do
     @tutor = Tutor.find(params[:id])
     @courses = @tutor.courses
-    title @tutor.name
+    page_title @tutor.name
     haml :tutor
 end
 
 get '/courses' do
-    title "Courses"
+    page_title "Courses"
     @courses = Course.all
     haml :courses, {locals: {title: 'All Courses'}}
 end
@@ -49,19 +56,34 @@ end
 get '/course/:id' do
     @course = Course.find(params[:id])
     @tutors = @course.tutors
-    title @course.name
+    page_title @course.name
     haml :course
 end
 
+get '/form/course/:id' do
+    @course = Course.find(params[:id])
+    @tutors = @course.tutors
+    page_title @course.name
+    haml :course_form
+end
+
+# todo send email
+post '/form/course/:id' do
+    @course = Course.find(params[:id])
+    @tutors = @course.tutors
+    page_title @course.name
+    haml :course_form
+end
+
 get '/users/new' do
-    title 'Sign Up'
+    page_title 'Sign Up'
     # log out the current user
     logout
     haml :signup
 end
 
 post '/users/new' do
-    title 'Sign Up'
+    page_title 'Sign Up'
     user = User.create(params)
     if !user.valid?
         flash.now[:info] = user.errors.map{|attr, msg| "#{attr.to_s.humanize} #{msg}"}.join("<br>")
@@ -78,12 +100,12 @@ get '/logout' do
 end
 
 get '/login' do
-    title 'Login'
+    page_title 'Login'
     haml :login
 end
 
 post '/login' do
-    title 'Login'
+    page_title 'Login'
     user = User.find_by_email(params[:email])
     if user and user.authenticate(params[:password])
         login user
@@ -95,7 +117,7 @@ post '/login' do
 end
 
 get '/payment' do 
-    title 'Payment Example'
+    page_title 'Payment Example'
     haml :payment
 end
 
@@ -117,14 +139,14 @@ post '/charge/:item' do
             :card => token,
             :description => "description for this charge" # this shows up in receipts
             )
-        title 'Payment Complete'
+        page_title 'Payment Complete'
     rescue Stripe::CardError => e
-        title 'Card Declined'
+        page_title 'Card Declined'
         flash.now[:warning] = 'Your card was declined'
         # The card has been declined
         puts "CardError"
     rescue Stripe::InvalidRequestError => e
-        title 'Invalid Request'
+        page_title 'Invalid Request'
         flash.now[:warning] = 'Something went wrong with the transaction. Did you hit refresh? Don\'t do that.'
     rescue => e
         puts e
@@ -137,9 +159,9 @@ end
 # Helpers
 
 helpers do 
-    # set the page title
-    def title(t)
-        @title = "#{t} | #{settings.app_name}"
+    # set the page page_title
+    def page_title(t)
+        @page_title = "#{t} | #{settings.app_name}"
     end
 
     # bootstrap glyphicons
@@ -160,6 +182,13 @@ helpers do
     def logout
         @user = nil
         session.clear
+    end
+
+    def require_admin
+        unless @user and @user.admin
+            flash.now[:warning] = 'You must be an admin to view this page'
+            halt 403, haml(:unauthorized)
+        end
     end
 
     # create a checkout button to charge the user

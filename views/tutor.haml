@@ -5,4 +5,4 @@
         %p.lead="#{glyph 'send'} #{@tutor.email}"
         - count=@tutor.courses.count
         %p.lead="#{@tutor.name} tutors #{count} #{'course'.pluralize(count)}:"
-= haml :courses, locals: {title: "#{@tutor.first_name}'s Courses:"}
+= haml :courses

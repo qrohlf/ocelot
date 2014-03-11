@@ -1,5 +1,5 @@
 .col-md-6.col-md-offset-3
-    -if title
+    -if defined? title
         %h2=title
     .list-group
         - @courses.each do |course|

@@ -5,6 +5,8 @@
 - Shows courses by tutor
 - Does stuff
 - Does more stuff
+- form to send email to all tutors for a course
+- admin login
 
 ## Helpful Links
 - [SAAB Tutoring Homepage](https://college.lclark.edu/student_life/associated_students/saab/tutor/)

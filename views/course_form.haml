@@ -1,0 +1,19 @@
+.row
+    .col-md-6.col-md-offset-3
+        %h1=@course.name
+        %p.lead="There are #{@course.tutors.count} #{'tutor'.pluralize(@course.tutors.count)} available for this course"
+.row
+    .col-md-6.col-md-offset-3
+        %h2 Email the tutors
+        %p You can use this form to get in touch with all the tutors for this course:
+        %form{role: "form", method: 'post'}
+            .form-group
+                %label{:for => "name"} Name
+                %input#name.form-control{:placeholder => "your name", :type => "text"}
+            .form-group
+                %label{:for => "email"} Email address
+                %input#email.form-control{:placeholder => "your email", :type => "email"}
+            .form-group
+                %label{:for => "message"} Message
+                %textarea#message.form-control{rows: 6, placeholder: 'your message'}
+            %button.btn.btn-default{:type => "submit"}="#{glyph 'send'} Send"
