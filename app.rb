@@ -27,16 +27,16 @@ get '/' do
     haml :landing
 end
 
-get '/examples' do
-    title "Examples"
-    @examples = Example.all
-    haml :examples
+get '/tutors' do
+    title "Tutors"
+    @examples = Tutor.all
+    haml :tutors
 end
 
-get '/examples/:id' do
-    title @example.name
-    @example = Example.find(params[:id])
-    haml :example
+get '/tutor/:id' do
+    @tutor = Tutor.find(params[:id])
+    title @tutor.name
+    haml :tutor
 end
 
 get '/users/new' do
