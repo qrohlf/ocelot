@@ -5,4 +5,5 @@
         - @courses.each do |course|
             %a.list-group-item{href: "/course/#{course.id}"}
                 %h4.list-group-item-heading=course.name
-                %p.list-group-item-text="#{course.tutors.count} tutors"
+                - count=course.tutors.count
+                %p.list-group-item-text="#{count} #{'tutor'.pluralize(count)}"
