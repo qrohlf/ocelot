@@ -116,45 +116,6 @@ post '/login' do
     end
 end
 
-get '/payment' do 
-    page_title 'Payment Example'
-    haml :payment
-end
-
-# process a charge for something
-# see https://stripe.com/docs/tutorials/charges for details
-post '/charge/:item' do 
-    # Get the credit card details submitted by the form
-    token = params[:stripeToken]
-
-    # The cost of your item should probably be stored in your model 
-    # or something. Everything is specified in cents
-    charge_amounts = {'example_charge' => 500, 'something_else' => 200}; 
-
-    # Create the charge on Stripe's servers - this will charge the user's card
-    begin
-        charge = Stripe::Charge.create(
-            :amount => charge_amounts[params[:item]], # amount in cents. 
-            :currency => "usd",
-            :card => token,
-            :description => "description for this charge" # this shows up in receipts
-            )
-        page_title 'Payment Complete'
-    rescue Stripe::CardError => e
-        page_title 'Card Declined'
-        flash.now[:warning] = 'Your card was declined'
-        # The card has been declined
-        puts "CardError"
-    rescue Stripe::InvalidRequestError => e
-        page_title 'Invalid Request'
-        flash.now[:warning] = 'Something went wrong with the transaction. Did you hit refresh? Don\'t do that.'
-    rescue => e
-        puts e
-    end
-
-    haml :charge
-end
-
 #######################################
 # Helpers
 
@@ -188,31 +149,6 @@ helpers do
         unless @user and @user.admin
             flash.now[:warning] = 'You must be an admin to view this page'
             halt 403, haml(:unauthorized)
-        end
-    end
-
-    # create a checkout button to charge the user
-    # amount should be the charge amount in cents
-    # amount is required
-    # options takes the following keys
-    # name: 'A name for the charge'
-    # description: 'A description for the charge'
-    # image: 'A url to an image to display'
-    # item: 'Item to be passed to the charge callback'
-    def checkout_button(amount, options = {})
-        defaults = {"data-amount" => amount, 
-            "data-description" => "2 widgets ($20.00)", 
-            "data-image" => "//placehold.it/128", 
-            "data-key" => ENV['STRIPE_KEY_PUBLIC'], 
-            "data-name" => settings.app_name, 
-            :src => "https://checkout.stripe.com/checkout.js"}
-
-        defaults['data-name'] = options[:name] if options[:name]
-        defaults['data-description'] = options[:description] if options[:description]
-        defaults['data-image'] = options[:image] if options[:image]
-
-        haml_tag :form, {action: "/charge/#{options[:item]}", method: 'POST'} do
-            haml_tag 'script.stripe-button', defaults
         end
     end
 end
