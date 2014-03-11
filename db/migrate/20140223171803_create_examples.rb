@@ -15,7 +15,7 @@ class CreateExamples < ActiveRecord::Migration
         t.timestamps
     end
 
-    create_table :tutors_courses, :id => false do |t|
+    create_table :courses_tutors, :id => false do |t|
       t.references :tutor, :null => false
       t.references :course, :null => false
     end

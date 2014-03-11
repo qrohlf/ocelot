@@ -1,0 +1,7 @@
+.row
+    .col-md-6.col-md-offset-3
+        %h1=@tutor.name
+        %p.lead="#{glyph 'user'} #{@tutor.lc_id}"
+        %p.lead="#{glyph 'send'} #{@tutor.email}"
+        %p.lead="#{@tutor.name} tutors #{@tutor.courses.count} courses:"
+= haml :courses, locals: {title: "#{@tutor.first_name}'s Courses:"}

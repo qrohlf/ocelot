@@ -29,14 +29,28 @@ end
 
 get '/tutors' do
     title "Tutors"
-    @examples = Tutor.all
-    haml :tutors
+    @tutors = Tutor.all
+    haml :tutors, {locals: {title: 'All Tutors'}}
 end
 
 get '/tutor/:id' do
     @tutor = Tutor.find(params[:id])
+    @courses = @tutor.courses
     title @tutor.name
     haml :tutor
+end
+
+get '/courses' do
+    title "Courses"
+    @courses = Course.all
+    haml :courses, {locals: {title: 'All Courses'}}
+end
+
+get '/course/:id' do
+    @course = Course.find(params[:id])
+    @tutors = @course.tutors
+    title @course.name
+    haml :course
 end
 
 get '/users/new' do

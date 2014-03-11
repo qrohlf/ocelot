@@ -10,12 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140223171803) do
+ActiveRecord::Schema.define(version: 20140224181939) do
 
   create_table "courses", force: true do |t|
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "courses_tutors", id: false, force: true do |t|
+    t.integer "tutor_id",  null: false
+    t.integer "course_id", null: false
   end
 
   create_table "tutors", force: true do |t|
@@ -27,9 +32,12 @@ ActiveRecord::Schema.define(version: 20140223171803) do
     t.datetime "updated_at"
   end
 
-  create_table "tutors_courses", id: false, force: true do |t|
-    t.integer "tutor_id",  null: false
-    t.integer "course_id", null: false
+  create_table "users", force: true do |t|
+    t.string   "name"
+    t.string   "email"
+    t.string   "password_digest"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
 end
