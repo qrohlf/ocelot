@@ -235,7 +235,7 @@
         var duplicate = this.$wrapper.find( '.token[data-value="' + value + '"]' ).addClass('duplicate')
         setTimeout(function() {
           duplicate.removeClass('duplicate');
-        }, 250)
+        }, 1200)
         return false
       }
 

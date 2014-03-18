@@ -41,24 +41,33 @@
   0% {
     border-color: #ededed;
   }
-  100% {
+  50% {
     border-color: #b94a48;
+  }
+  100% {
+    border-color: #ededed;
   }
 }
 @-moz-keyframes 'blink' {
   0% {
     border-color: #ededed;
   }
-  100% {
+  50% {
     border-color: #b94a48;
+  }
+  100% {
+    border-color: #ededed;
   }
 }
 @keyframes 'blink' {
   0% {
     border-color: #ededed;
   }
-  100% {
+  50% {
     border-color: #b94a48;
+  }
+  100% {
+    border-color: #ededed;
   }
 }
 
@@ -94,10 +103,10 @@
     &.duplicate {
       border-color: @state-danger-border;
       .animation-name(blink);
-      .animation-duration(0.1s);
+      .animation-duration(1.2s);
       .animation-direction(normal);
       .animation-timing-function(ease);
-      .animation-iteration-count(infinite);
+      .animation-iteration-count(1);
     }
     &.invalid {
       background: none;

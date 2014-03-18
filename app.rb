@@ -88,7 +88,6 @@ get '/tutors/:id/edit' do
     @tutor = Tutor.find(params[:id])
     params.merge! @tutor.attributes.to_options
     params[:courses] = @tutor.courses.map(&:name).join(',')
-    puts params
     haml :edit_tutor
 end
 
