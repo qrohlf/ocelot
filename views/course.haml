@@ -11,3 +11,18 @@
         .form-group
             %textarea.form-control{rows: 3, readonly: true}=@tutors.map{|t| t.email}.join(', ')
 .row= haml :tutors, locals: {title: "Tutors for #{@course.name}"}
+.row 
+    .col-md-6.col-md-offset-3
+        %a.btn.btn-primary{href: "/courses/#{@course.id}/edit"} Edit
+        %a.btn.btn-danger{'data-toggle' => 'modal', 'data-target' => '#confirmdelete'} Delete
+.modal.fade#confirmdelete{"aria-hidden" => "true", :role => "dialog", :tabindex => "-1"}>
+    .modal-dialog.modal-sm
+        .modal-content
+            .modal-header
+                %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", :type => "button"} ×
+                %h4.modal-title="Are you sure you want to delete the info for #{@course.name}?"
+            .modal-body
+                %button.btn.btn-primary{'data-dismiss' => 'modal'} Cancel
+                %form.pull-right{method: 'post', id: 'deleteform', style: 'display: inline;'}
+                    %input{:name => "_method", :type => "hidden", :value => "delete"}
+                    %button.btn.btn-danger#confirmdeletebutton{type: 'submit'}="Delete #{@course.name}"

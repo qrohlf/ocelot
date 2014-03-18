@@ -1,0 +1,14 @@
+.col-md-6.col-md-offset-3
+    %h2="Editing info for #{@course.name}"
+    %form{method: 'post'}
+        %input{:name => "_method", :type => "hidden", :value => "put"}
+        .form-group
+            %label{for: "name"} Course Name
+            %input#name.form-control{placeholder: "Enter first name", type: "text", name: "name", value: form_remember(:name)}
+        .form-group
+            %label{for: "tutors"} Tutors
+            %input#tutors.form-control{type: 'text', name: "tutors", 'data-tokens' => form_remember(:tokens), value: form_remember(:tutors)}
+        %button.btn.btn-lg.btn-primary{type: "submit"} Submit
+- @scripts << "/js/vendor/typeahead/typeahead.bundle.min.js"
+- @scripts << "/js/vendor/bootstrap-tokenfield/bootstrap-tokenfield.js"
+- @scripts << "/js/tutors_autocomplete.js"

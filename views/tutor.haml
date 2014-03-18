@@ -10,8 +10,6 @@
     .col-md-6.col-md-offset-3
         %a.btn.btn-primary{href: "/tutors/#{@tutor.id}/edit"} Edit
         %a.btn.btn-danger{'data-toggle' => 'modal', 'data-target' => '#confirmdelete'} Delete
-        %form{method: 'post', id: 'deleteform'}
-            %input{:name => "_method", :type => "hidden", :value => "delete"}
 .modal.fade#confirmdelete{"aria-hidden" => "true", :role => "dialog", :tabindex => "-1"}>
     .modal-dialog.modal-sm
         .modal-content
@@ -20,6 +18,7 @@
                 %h4.modal-title="Are you sure you want to delete the info for #{@tutor.name}?"
             .modal-body
                 %button.btn.btn-primary{'data-dismiss' => 'modal'} Cancel
-                %button.btn.btn-danger.pull-right#confirmdeletebutton="Delete #{@tutor.first_name}"
-- @scripts << "/js/delete_tutor.js"
+                %form.pull-right{method: 'post', id: 'deleteform', style: 'display: inline;'}
+                    %input{:name => "_method", :type => "hidden", :value => "delete"}
+                    %button.btn.btn-danger#confirmdeletebutton{type: 'submit'}="Delete #{@tutor.first_name}"
 

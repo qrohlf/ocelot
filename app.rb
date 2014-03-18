@@ -41,6 +41,10 @@ get '/tutors' do
     haml :tutors, {locals: {title: 'All Tutors'}}
 end
 
+get '/tutors/json' do
+    Tutor.all.to_json(only: [:id], methods: [:name])
+end
+
 get '/tutors/new' do 
     page_title 'New Tutor'
     haml :new_tutor
@@ -92,6 +96,7 @@ get '/tutors/:id/edit' do
 end
 
 put '/tutors/:id/edit' do 
+    page_title "Edit Tutor"
     @tutor = Tutor.find(params[:id])
     courses = Array.new
     params[:courses].split(',').each do |c|
@@ -118,6 +123,63 @@ end
 
 get '/courses/json' do
     Course.all.map(&:name).to_json
+end
+
+get '/courses/new' do
+    page_title "New Course"
+    haml :new_course
+end
+
+post '/courses/new' do
+    page_title "New Course"
+    tutors = Array.new
+    params[:tutors].split(',').each do |id|
+        tutors << Tutor.find(id)
+    end
+    puts tutors
+    course = Course.create(name: params[:name], tutors: tutors)
+    if !course.valid?
+        params[:tokens] = tutors.map{|t| {label: t.name, value: t.id}}.to_json
+        flash.now[:info] = course.errors.map{|attr, msg| "#{attr.to_s.humanize} #{msg}"}.join("<br>")
+        haml :new_course
+    else 
+        flash[:info] = "Course #{course.name} created."
+        redirect "/courses/#{course.id}"
+    end
+end
+
+get '/courses/:id/edit' do 
+    page_title "Edit Course"
+    @course = Course.find(params[:id])
+    params.merge! @course.attributes.to_options
+    params[:tokens] = @course.tutors.map{|t| {label: t.name, value: t.id}}.to_json
+    params[:tutors] = @course.tutors.map(&:id).join(',')
+    haml :edit_course
+end
+
+put '/courses/:id/edit' do 
+    page_title "Edit Course"
+    @course = Course.find(params[:id])
+    tutors = Array.new
+    params[:tutors].split(',').each do |id|
+        tutors << Tutor.find(id)
+    end
+    @course.update(name: params[:name], tutors: tutors)
+    if !@course.valid?
+        params[:tokens] = tutors.map{|t| {label: t.name, value: t.id}}.to_json
+        flash.now[:info] = @course.errors.map{|attr, msg| "#{attr.to_s.humanize} #{msg}"}.join("<br>")
+        haml :edit_course
+    else 
+        flash[:info] = "Course #{@course.name} updated."
+        redirect "/courses/#{@course.id}"
+    end
+end
+
+delete '/courses/:id' do 
+    @course = Course.find(params[:id])
+    flash[:info] = "Course '#{@course.name}' deleted" 
+    @course.delete
+    redirect '/courses'
 end
 
 get '/courses/:id' do
