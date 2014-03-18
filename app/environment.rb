@@ -10,6 +10,8 @@ Bundler.require
 # require any non-gem libraries that are needed
 require 'net/https'
 require 'erb'
+require 'CSV'
+require 'date'
 # require all of the app's models
 require_all './models'
 # set the app root

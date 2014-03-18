@@ -8,7 +8,7 @@ before do
 end
 
 # Require admin permissions for all tutor and course paths
-[%r{^/tutor.*}, %r{^/course.*}].each do |route|
+[%r{^/tutor.*}, %r{^/course.*}, %r{^/mandage.*}].each do |route|
     before route do 
         require_admin
     end
@@ -37,7 +37,7 @@ end
 
 get '/tutors' do
     page_title "Tutors"
-    @tutors = Tutor.all
+    @tutors = Tutor.all.order(last_name: :asc, first_name: :asc)
     haml :tutors, {locals: {title: 'All Tutors'}}
 end
 
@@ -84,7 +84,7 @@ end
 delete '/tutors/:id' do
     @tutor = Tutor.find(params[:id])
     flash[:info] = "Tutor '#{@tutor.name}' deleted"
-    @tutor.delete
+    @tutor.destroy
     redirect '/tutors'
 end
 
@@ -117,7 +117,7 @@ end
 
 get '/courses' do
     page_title "Courses"
-    @courses = Course.all
+    @courses = Course.all.order(name: :asc)
     haml :courses, {locals: {title: 'All Courses'}}
 end
 
@@ -178,7 +178,7 @@ end
 delete '/courses/:id' do 
     @course = Course.find(params[:id])
     flash[:info] = "Course '#{@course.name}' deleted" 
-    @course.delete
+    @course.destroy
     redirect '/courses'
 end
 
@@ -245,13 +245,69 @@ post '/login' do
     end
 end
 
+get '/manage' do
+    page_title 'Manage'
+    @tutor_count = Tutor.all.count
+    @course_count = Course.all.count
+    haml :manage
+end
+
+get '/manage/export' do
+    export = CSV.generate do |csv|
+        csv << ['lc_id', 'first_name', 'last_name', 'email', 'courses']
+        Tutor.all.each do |t|
+            csv << [t.lc_id, t.first_name, t.last_name, t.email, t.courses.map(&:name).join(', ')]
+        end
+    end
+    content_type 'text/csv'
+    attachment "tutors#{Date.today.to_s}.csv"
+    export
+end
+
+post '/manage/import' do 
+    new_tutors = 0
+    updated_tutors = 0
+    new_courses = 0
+    CSV.foreach(params[:import][:tempfile], headers: true) do |row|
+        attrs = row.to_hash
+        t = Tutor.find_or_initialize_by(lc_id: attrs['lc_id'])
+        new_tutors += 1 if t.new_record?
+        updated_tutors += 1 if t.persisted?
+        courses = Array.new
+        unless (attrs['courses'].nil?)
+            attrs['courses'].split(',').each do |course_name|
+                c = Course.find_or_create_by!(name: course_name.strip) do |c|
+                    new_courses += 1 if c.new_record? #this will only run if the course is newly created
+                end
+                courses << c
+            end
+        end
+        t.update(
+            lc_id: attrs['lc_id'], 
+            first_name: attrs['first_name'],
+            last_name: attrs['last_name'],
+            email: attrs['email'],
+            courses: courses
+            )
+    end
+    flash[:info] = "Import Successful. #{new_tutors} tutors and #{new_courses} courses added. #{updated_tutors} tutors updated."
+    redirect '/manage', 303 #switch request method to get
+end
+
+delete '/manage/reset' do
+    deleted_tutors = Tutor.destroy_all(1).count
+    deleted_courses = Course.destroy_all(1).count
+    flash[:info] = "Deleted #{deleted_tutors} tutors and #{deleted_courses} courses from the database"
+    redirect '/manage', 303 #switch request method to get
+end
+
 #######################################
 # Helpers
 
 helpers do 
     # set the page page_title
     def page_title(t)
-        @page_title = "#{t} | #{settings.app_name}"
+        @title = "#{t} | #{settings.app_name}"
     end
 
     # bootstrap glyphicons

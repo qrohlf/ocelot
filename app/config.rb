@@ -11,6 +11,7 @@ configure do
         'Create New' => {
             'Tutor' => '/tutors/new',
             'Course' => '/courses/new'
-        }
+        },
+        'Manage' => '/manage'
     }
 end
