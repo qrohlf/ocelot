@@ -7,6 +7,10 @@ configure do
     # to create a dropdown
     set :nav_left, {
         'Tutors' => '/tutors',
-        'Courses' => '/courses'
+        'Courses' => '/courses',
+        'New' => {
+            'Tutor' => '/tutors/new',
+            'Course' => '/courses/new'
+        }
     }
 end

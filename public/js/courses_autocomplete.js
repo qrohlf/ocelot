@@ -13,8 +13,6 @@ $(document).ready(function() {
         // those strings
         filter: function(list) {
           var filtered = $.map(list, function(course) { return {value: course}; });
-          console.log(filtered);
-          alert('filter complete');
           return filtered;
         }
       }
