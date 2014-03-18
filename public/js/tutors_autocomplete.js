@@ -6,7 +6,6 @@ $(document).ready(function() {
       },
       queryTokenizer: Bloodhound.tokenizers.whitespace,    
       prefetch: {
-        ttl: 1, //disable cache
         url: window.location.origin+'/tutors/json',
         // the json file contains an array of strings, but the Bloodhound
         // suggestion engine expects JavaScript objects so this converts all of
