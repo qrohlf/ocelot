@@ -8,7 +8,7 @@ configure do
     set :nav_left, {
         'Tutors' => '/tutors',
         'Courses' => '/courses',
-        'New' => {
+        'Create New' => {
             'Tutor' => '/tutors/new',
             'Course' => '/courses/new'
         }
