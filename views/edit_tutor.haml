@@ -1,0 +1,24 @@
+.col-md-6.col-md-offset-3
+    %h2="Editing info for #{@tutor.name}"
+    %form{method: 'post'}
+        %input{:name => "_method", :type => "hidden", :value => "put"}
+        .row
+            .form-group.col-md-6
+                %label{for: "first_name"} First Name
+                %input#first_name.form-control{placeholder: "Enter first name", type: "text", name: "first_name", value: form_remember(:first_name)}
+            .form-group.col-md-6
+                %label{for: "last_name"} Last Name
+                %input#last_name.form-control{placeholder: "Enter last name", type: "text", name: "last_name", value: form_remember(:last_name)}
+        .form-group
+            %label{for: "email"} Email address
+            %input#email.form-control{placeholder: "Enter email", type: "email", name: "email", value: form_remember(:email)}
+        .form-group
+            %label{for: "lc_id"} Lewis & Clark ID #
+            %input#lc_id.form-control{placeholder: "LC ID", type: 'text', name: "lc_id", value: '%07d' % form_remember(:lc_id)}
+        .form-group
+            %label{for: "courses"} Courses
+            %input#courses.form-control{type: 'text', name: "courses", value: form_remember(:courses)}
+        %button.btn.btn-lg.btn-primary{type: "submit"} Submit
+- @scripts << "/js/vendor/typeahead/typeahead.bundle.min.js"
+- @scripts << "/js/vendor/bootstrap-tokenfield/bootstrap-tokenfield.js"
+- @scripts << "/js/courses_autocomplete.js"

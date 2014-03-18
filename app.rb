@@ -4,6 +4,7 @@
 
 before do
     login User.find(session[:user]) if User.exists? session[:user]
+    @scripts = Array.new
 end
 
 # Require admin permissions for all tutor and course paths
@@ -40,12 +41,75 @@ get '/tutors' do
     haml :tutors, {locals: {title: 'All Tutors'}}
 end
 
-get '/tutor/:id' do
+get '/tutors/new' do 
+    page_title 'New Tutor'
+    haml :new_tutor
+end
+
+post '/tutors/new' do 
+    page_title 'New Tutor'
+    courses = Array.new
+    params[:courses].split(',').each do |c|
+        course = c.strip
+        courses << Course.find_by(name: course) if Course.exists?(name: course)
+    end
+    tutor = Tutor.create(
+        first_name: params[:first_name],
+        last_name: params[:last_name],
+        email: params[:email],
+        lc_id: params[:lc_id],
+        courses: courses
+    )
+    if !tutor.valid?
+        flash.now[:info] = tutor.errors.map{|attr, msg| "#{attr.to_s.humanize} #{msg}"}.join("<br>")
+        haml :new_tutor
+    else 
+        flash[:info] = "New tutor created."
+        redirect "/tutors/#{tutor.id}"
+    end
+    
+end
+
+get '/tutors/:id' do
     @tutor = Tutor.find(params[:id])
     @courses = @tutor.courses
     page_title @tutor.name
     haml :tutor
 end
+
+delete '/tutors/:id' do
+    @tutor = Tutor.find(params[:id])
+    flash[:info] = "Tutor '#{@tutor.name}' deleted"
+    @tutor.delete
+    redirect '/tutors'
+end
+
+get '/tutors/:id/edit' do 
+    @tutor = Tutor.find(params[:id])
+    params.merge! @tutor.attributes.to_options
+    params[:courses] = @tutor.courses.map(&:name).join(',')
+    puts params
+    haml :edit_tutor
+end
+
+put '/tutors/:id/edit' do 
+    @tutor = Tutor.find(params[:id])
+    courses = Array.new
+    params[:courses].split(',').each do |c|
+        course = c.strip
+        courses << Course.find_by(name: course) if Course.exists?(name: course)
+    end
+    params[:courses] = courses
+    @tutor.update(params.slice(:first_name, :last_name, :email, :lc_id, :courses))
+    if !@tutor.valid?
+        flash.now[:info] = @tutor.errors.map{|attr, msg| "#{attr.to_s.humanize} #{msg}"}.join("<br>")
+        haml :new_tutor
+    else 
+        flash[:info] = "Info for #{@tutor.name} updated."
+        redirect "/tutors/#{@tutor.id}"
+    end
+end
+
 
 get '/courses' do
     page_title "Courses"
@@ -53,7 +117,11 @@ get '/courses' do
     haml :courses, {locals: {title: 'All Courses'}}
 end
 
-get '/course/:id' do
+get '/courses/json' do
+    Course.all.map(&:name).to_json
+end
+
+get '/courses/:id' do
     @course = Course.find(params[:id])
     @tutors = @course.tutors
     page_title @course.name
@@ -143,6 +211,10 @@ helpers do
     def logout
         @user = nil
         session.clear
+    end
+
+    def form_remember(id)
+        (defined? params[id]) ? params[id] : nil
     end
 
     def require_admin

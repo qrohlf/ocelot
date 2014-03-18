@@ -23,6 +23,9 @@ require './app/config'
 use Rack::Session::Cookie, :expire_after => 1209600, # 7 days
                            :secret => ENV['COOKIE_SECRET']
 
+# MethodOverride for RESTful interface
+use Rack::MethodOverride
+
 
 # Database provided by sqlite3 in development and postgresql on Heroku
 db = URI.parse(ENV['DATABASE_URL'])
