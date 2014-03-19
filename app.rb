@@ -262,7 +262,7 @@ post '/login' do
     user = User.find_by_email(params[:email])
     if user and user.authenticate(params[:password])
         login user
-        redirect '/'
+        redirect URI.unescape(params[:dest] || '/')
     else
         flash.now[:info] = "Sorry, wrong username or password"
         haml :login, locals: {email: params[:email]}
@@ -368,7 +368,8 @@ helpers do
 
     def require_admin
         unless @user and @user.admin
-            flash.now[:warning] = 'You must be an admin to view this page'
+            flash[:warning] = 'You must be logged in as an admin to view this page'
+            redirect "/login?dest=#{URI.escape(request.fullpath)}", 303
             halt 403, haml(:unauthorized)
         end
     end
