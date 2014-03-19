@@ -8,7 +8,7 @@ before do
 end
 
 # Require admin permissions for all tutor and course paths
-[%r{^/tutor.*}, %r{^/course.*}, %r{^/manage.*}].each do |route|
+[%r{^/tutor.*}, %r{^/courses/.*}, %r{^/manage.*}].each do |route|
     before route do 
         require_admin
     end
@@ -224,7 +224,7 @@ post '/form/course/:id' do
     emails = @course.tutors.map(&:email)
     body = "#{params[:message]}\n\n--\nThis message was sent to all SAAB tutors for #{@course.name}."
     from = "#{params[:name]} <#{ENV['GMAIL_ACCOUNT']}>"
-    Pony.mail(from: from, to: emails, reply_to: params[:email], :subject => "Message from #{params[:name]} about #{@course.name}", :body => body)
+    Pony.mail(from: from, bcc: ENV['GMAIL_ACCOUNT'], to: emails, reply_to: params[:email], :subject => "Message from #{params[:name]} about #{@course.name}", :body => body)
     flash.now[:info] = "Message sent to #{@course.name} tutors. Thanks!"
     haml :course_form
 end
