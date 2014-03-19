@@ -1,4 +1,4 @@
-class CreateExamples < ActiveRecord::Migration
+class CreateTutorsAndCourses < ActiveRecord::Migration
   def change
     create_table :tutors do |t|
         t.string :first_name

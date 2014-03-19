@@ -258,6 +258,11 @@ get '/manage/export' do
         Tutor.all.each do |t|
             csv << [t.lc_id, t.first_name, t.last_name, t.email, t.courses.map(&:name).join(', ')]
         end
+        empty_courses = Array.new 
+        Course.all.each do |c|
+            empty_courses << c if c.tutors.count == 0
+        end
+        csv << ['EMPTY-COURSES', '', '', '', empty_courses.map(&:name).join(', ')]
     end
     content_type 'text/csv'
     attachment "tutors#{Date.today.to_s}.csv"
@@ -270,9 +275,6 @@ post '/manage/import' do
     new_courses = 0
     CSV.foreach(params[:import][:tempfile], headers: true) do |row|
         attrs = row.to_hash
-        t = Tutor.find_or_initialize_by(lc_id: attrs['lc_id'])
-        new_tutors += 1 if t.new_record?
-        updated_tutors += 1 if t.persisted?
         courses = Array.new
         unless (attrs['courses'].nil?)
             attrs['courses'].split(',').each do |course_name|
@@ -282,13 +284,19 @@ post '/manage/import' do
                 courses << c
             end
         end
-        t.update(
-            lc_id: attrs['lc_id'], 
-            first_name: attrs['first_name'],
-            last_name: attrs['last_name'],
-            email: attrs['email'],
-            courses: courses
-            )
+        unless (attrs['lc_id'] == 'EMPTY-COURSES')
+            t = Tutor.find_or_initialize_by(lc_id: attrs['lc_id'])
+            new_tutors += 1 if t.new_record?
+            updated_tutors += 1 if t.persisted?
+            puts "updated #{t.name}" if t.persisted?
+            t.update(
+                lc_id: attrs['lc_id'], 
+                first_name: attrs['first_name'],
+                last_name: attrs['last_name'],
+                email: attrs['email'],
+                courses: courses
+                )
+        end
     end
     flash[:info] = "Import Successful. #{new_tutors} tutors and #{new_courses} courses added. #{updated_tutors} tutors updated."
     redirect '/manage', 303 #switch request method to get
