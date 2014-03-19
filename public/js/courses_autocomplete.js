@@ -6,7 +6,7 @@ $(document).ready(function() {
       },
       queryTokenizer: Bloodhound.tokenizers.whitespace,    
       prefetch: {
-        url: window.location.origin+'/courses/json',
+        url: 'http://'+window.location.host+'/courses/json',
         // the json file contains an array of strings, but the Bloodhound
         // suggestion engine expects JavaScript objects so this converts all of
         // those strings
