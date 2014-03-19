@@ -230,9 +230,8 @@ post '/form/course/:id' do
 end
 
 get '/users/new' do
+    require_admin
     page_title 'Sign Up'
-    # log out the current user
-    logout
     haml :signup
 end
 
@@ -243,7 +242,7 @@ post '/users/new' do
         flash.now[:info] = user.errors.map{|attr, msg| "#{attr.to_s.humanize} #{msg}"}.join("<br>")
         haml :signup, locals: {email: params[:email]}
     else 
-        login user
+        flash.now[:info] = "User created. You may now log in as #{@user.email}."
         redirect '/'
     end
 end

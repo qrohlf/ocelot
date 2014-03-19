@@ -10,7 +10,8 @@ configure do
         'Courses' => '/courses',
         'Create New' => {
             'Tutor' => '/tutors/new',
-            'Course' => '/courses/new'
+            'Course' => '/courses/new',
+            'User' => '/users/new'
         },
         'Manage' => '/manage'
     }

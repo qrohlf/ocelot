@@ -9,4 +9,8 @@
         .form-group
             %label{for: "password_confirmation"} Confirm Password
             %input#password_confirmation.form-control{placeholder: "Password", type: "password", name: "password_confirmation"}
+        .checkbox
+            %label{for: "admin"}
+                %input#admin{:type => "checkbox", name: "admin", checked: form_remember(:admin)}
+                Grant admin permissions?
         %button.btn.btn-lg.btn-primary{type: "submit"} Submit

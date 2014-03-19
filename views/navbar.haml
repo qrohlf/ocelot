@@ -13,5 +13,5 @@
                 =haml :nav_ul, locals: {nav: settings.nav}
         %ul.nav.navbar-nav.navbar-right
             - unless @user.nil? then nav = {@user.email => {'Account Settings' => '/account', 'Log Out' => '/logout'}} 
-            - else nav = {'Login' => '/login', 'Signup' => '/users/new'}
+            - else nav = {'Admin Login' => '/login'}
             = haml :nav_ul, locals: {nav: nav}
