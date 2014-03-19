@@ -8,7 +8,7 @@ before do
 end
 
 # Require admin permissions for all tutor and course paths
-[%r{^/tutor.*}, %r{^/course.*}, %r{^/mandage.*}].each do |route|
+[%r{^/tutor.*}, %r{^/course.*}, %r{^/manage.*}].each do |route|
     before route do 
         require_admin
     end
