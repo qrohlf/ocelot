@@ -3,7 +3,11 @@
         %h2=title
     .list-group
         - @courses.each do |course|
-            %a.list-group-item{href: "/courses/#{course.id}"}
+            - if @user and @user.admin
+                - link = "/courses/#{course.id}"
+            - else
+                - link = "/form/course/#{course.id}"
+            %a.list-group-item{href: link}
                 %h4.list-group-item-heading=course.name
                 - count=course.tutors.count
                 %p.list-group-item-text="#{count} #{'tutor'.pluralize(count)}"
