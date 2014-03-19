@@ -303,8 +303,8 @@ post '/manage/import' do
 end
 
 delete '/manage/reset' do
-    deleted_tutors = Tutor.destroy_all(1).count
-    deleted_courses = Course.destroy_all(1).count
+    deleted_tutors = Tutor.destroy_all.count
+    deleted_courses = Course.destroy_all.count
     flash[:info] = "Deleted #{deleted_tutors} tutors and #{deleted_courses} courses from the database"
     redirect '/manage', 303 #switch request method to get
 end
