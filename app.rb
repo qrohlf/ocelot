@@ -199,8 +199,33 @@ end
 # todo send email
 post '/form/course/:id' do
     @course = Course.find(params[:id])
-    @tutors = @course.tutors
     page_title @course.name
+
+    if params[:name].blank?
+        flash.now[:warning] = "Name is required"
+        return haml :course_form
+    end
+
+    unless params[:name] =~ /\A[[0-9a-z\s\.]]+\z/i
+        flash.now[:warning] = "Name can't have special characters"
+        return haml :course_form
+    end
+
+    unless params[:email] =~ /@/
+        flash.now[:warning] = "Invalid email"
+        return haml :course_form
+    end
+
+    if params[:message].blank?
+        flash.now[:warning] = "Message is required"
+        return haml :course_form
+    end
+
+    emails = @course.tutors.map(&:email)
+    body = "#{params[:message]}\n\n--\nThis message was sent to all SAAB tutors for #{@course.name}."
+    from = "#{params[:name]} <#{ENV['GMAIL_ACCOUNT']}>"
+    Pony.mail(from: from, to: emails, reply_to: params[:email], :subject => "Message from #{params[:name]} about #{@course.name}", :body => body)
+    flash.now[:info] = "Message sent to #{@course.name} tutors. Thanks!"
     haml :course_form
 end
 

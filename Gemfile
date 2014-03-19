@@ -17,6 +17,7 @@ gem "sinatra-flash", require: 'sinatra/flash'
 gem 'bcrypt'
 gem 'bcrypt-ruby' #legacy
 gem 'redcarpet', require: 'redcarpet/compat' #markdown rendering
+gem 'pony'
 
 group :development do
     gem "sqlite3"

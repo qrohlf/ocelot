@@ -9,11 +9,11 @@
         %form{role: "form", method: 'post'}
             .form-group
                 %label{:for => "name"} Name
-                %input#name.form-control{:placeholder => "your name", :type => "text"}
+                %input#name.form-control{:placeholder => "your name", :type => "text", name: 'name', value: form_remember('name')}
             .form-group
                 %label{:for => "email"} Email address
-                %input#email.form-control{:placeholder => "your email", :type => "email"}
+                %input#email.form-control{:placeholder => "your email", :type => "email", name: 'email', value: form_remember('email')}
             .form-group
                 %label{:for => "message"} Message
-                %textarea#message.form-control{rows: 6, placeholder: 'your message'}
+                %textarea#message.form-control{rows: 6, placeholder: 'your message', name: 'message'}=form_remember('message')
             %button.btn.btn-default{:type => "submit"}="#{glyph 'send'} Send"
