@@ -36,20 +36,30 @@ ActiveRecord::Base.establish_connection(
   :adapter  => db.scheme == 'postgres' ? 'postgresql' : db.scheme,
   :host     => db.host,
   :port     => db.port,
-  :username => db.user,
+  :user_name => db.user,
   :password => db.password,
   :database => db.path[1..-1],
   :encoding => 'utf8'
 )
 
+# Mail.defaults do
+#   delivery_method :smtp, { :address              => "smtp.gmail.com",
+#                            :port                 => 587,
+#                            :domain               => 'localhost.localdomain',
+#                            :user_name            => ENV['GMAIL_ACCOUNT'],
+#                            :password             => ENV['GMAIL_PASSWORD'],
+#                            :authentication       => 'plain',
+#                            :enable_starttls_auto => true  }
+# end
+
 Mail.defaults do
-  delivery_method :smtp, { :address              => "smtp.gmail.com",
-                           :port                 => 587,
-                           :domain               => 'localhost.localdomain',
-                           :user_name            => ENV['GMAIL_ACCOUNT'],
-                           :password             => ENV['GMAIL_PASSWORD'],
-                           :authentication       => 'plain',
-                           :enable_starttls_auto => true  }
+  delivery_method :smtp, {
+    :port      => 587,
+    :address   => "smtp.mandrillapp.com",
+    :user_name => ENV["MANDRILL_USERNAME"],
+    :password  => ENV["MANDRILL_API_KEY"],
+    :enable_starttls_auto => true,
+  }
 end
 
 # Pony.options = {

@@ -136,7 +136,6 @@ post '/courses/new' do
     params[:tutors].split(',').each do |id|
         tutors << Tutor.find(id)
     end
-    puts tutors
     course = Course.create(name: params[:name], tutors: tutors)
     if !course.valid?
         params[:tokens] = tutors.map{|t| {label: t.name, value: t.id}}.to_json
@@ -222,16 +221,17 @@ post '/form/course/:id' do
     end
 
     emails = @course.tutors.map(&:email)
+    # emails = @course.tutors.map{|t| "qrohlf+#{t.first_name}@gmail.com"} #useful for testing
 
     m = Mail.new
-    m.from = "#{params[:name]} <#{ENV['GMAIL_ACCOUNT']}>"
+    m.from = "#{params[:name]} <#{ENV['ADMIN_EMAIL']}>"
     m.to = emails
-    m.bcc = ENV['GMAIL_ACCOUNT']
+    m.bcc = ENV['ADMIN_EMAIL']
     m.reply_to = params[:email]
     m.subject = "Message from #{params[:name]} about #{@course.name}"
     m.body = "#{params[:message]}\n\n--\nThis message was sent to all SAAB tutors for #{@course.name}."
 
-    m.deliver!
+    m.deliver
     flash.now[:info] = "Message sent to #{@course.name} tutors. Thanks!"
     haml :course_form
 end
@@ -366,19 +366,17 @@ post '/manage/broadcast' do
         redirect '/manage'
     end
 
-    # emails = tutors.all.map(&:email)
-    emails = Tutor.all.map{|t| "qrohlf+#{t.id}@gmail.com"}
+    emails = Tutor.all.map(&:email)
 
-    # gmail max bcc is 100
-    emails.each_slice(50) do |recipients|
-        m = Mail.new
-        m.from = "#{params[:name]} <#{ENV['GMAIL_ACCOUNT']}>"
-        m.bcc = emails
-        m.subject = params[:subject]
-        m.body = "#{params[:message]}\n\n--\nThis message was sent to all SAAB tutors."
+    m = Mail.new
+    m.from = "#{params[:name]} <#{ENV['ADMIN_EMAIL']}>"
+    m.bcc = emails
+    m.subject = params[:subject]
+    m.body = "#{params[:message]}\n\n--\nThis message was sent to all SAAB tutors."
 
-        m.deliver!
-    end
+    m.deliver
+
+    flash[:info] = "Broadcast email sent to #{emails.count} users";
 
     redirect '/manage', 303
 end
