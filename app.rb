@@ -222,9 +222,16 @@ post '/form/course/:id' do
     end
 
     emails = @course.tutors.map(&:email)
-    body = "#{params[:message]}\n\n--\nThis message was sent to all SAAB tutors for #{@course.name}."
-    from = "#{params[:name]} <#{ENV['GMAIL_ACCOUNT']}>"
-    Pony.mail(from: from, bcc: ENV['GMAIL_ACCOUNT'], to: emails, reply_to: params[:email], :subject => "Message from #{params[:name]} about #{@course.name}", :body => body)
+
+    m = Mail.new
+    m.from = "#{params[:name]} <#{ENV['GMAIL_ACCOUNT']}>"
+    m.to = emails
+    m.bcc = ENV['GMAIL_ACCOUNT']
+    m.reply_to = params[:email]
+    m.subject = "Message from #{params[:name]} about #{@course.name}"
+    m.body = "#{params[:message]}\n\n--\nThis message was sent to all SAAB tutors for #{@course.name}."
+
+    m.deliver!
     flash.now[:info] = "Message sent to #{@course.name} tutors. Thanks!"
     haml :course_form
 end
@@ -331,6 +338,49 @@ delete '/manage/reset' do
     deleted_courses = Course.destroy_all.count
     flash[:info] = "Deleted #{deleted_tutors} tutors and #{deleted_courses} courses from the database"
     redirect '/manage', 303 #switch request method to get
+end
+
+post '/manage/broadcast' do
+    if params[:name].blank?
+        flash[:warning] = "Name is required"
+        redirect '/manage'
+    end
+
+    unless params[:name] =~ /\A[[0-9a-z\s\.]]+\z/i
+        flash[:warning] = "Name can't have special characters"
+        redirect '/manage'
+    end
+
+    if params[:subject].blank?
+        flash[:warning] = "Subject is required"
+        redirect '/manage'
+    end
+
+    unless params[:subject] =~ /\A[[0-9a-z\s\.]]+\z/i
+        flash[:warning] = "Subject can't have special characters"
+        redirect '/manage'
+    end
+
+    if params[:message].blank?
+        flash[:warning] = "Message is required"
+        redirect '/manage'
+    end
+
+    # emails = tutors.all.map(&:email)
+    emails = Tutor.all.map{|t| "qrohlf+#{t.id}@gmail.com"}
+
+    # gmail max bcc is 100
+    emails.each_slice(50) do |recipients|
+        m = Mail.new
+        m.from = "#{params[:name]} <#{ENV['GMAIL_ACCOUNT']}>"
+        m.bcc = emails
+        m.subject = params[:subject]
+        m.body = "#{params[:message]}\n\n--\nThis message was sent to all SAAB tutors."
+
+        m.deliver!
+    end
+
+    redirect '/manage', 303
 end
 
 #######################################
