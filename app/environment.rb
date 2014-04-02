@@ -36,21 +36,11 @@ ActiveRecord::Base.establish_connection(
   :adapter  => db.scheme == 'postgres' ? 'postgresql' : db.scheme,
   :host     => db.host,
   :port     => db.port,
-  :user_name => db.user,
+  :username => db.user,
   :password => db.password,
   :database => db.path[1..-1],
   :encoding => 'utf8'
 )
-
-# Mail.defaults do
-#   delivery_method :smtp, { :address              => "smtp.gmail.com",
-#                            :port                 => 587,
-#                            :domain               => 'localhost.localdomain',
-#                            :user_name            => ENV['GMAIL_ACCOUNT'],
-#                            :password             => ENV['GMAIL_PASSWORD'],
-#                            :authentication       => 'plain',
-#                            :enable_starttls_auto => true  }
-# end
 
 Mail.defaults do
   delivery_method :smtp, {
@@ -61,17 +51,3 @@ Mail.defaults do
     :enable_starttls_auto => true,
   }
 end
-
-# Pony.options = {
-#     from: "SAAB Contact Form <#{ENV['GMAIL_ACCOUNT']}>",
-#     :via => :smtp,
-#     :via_options => {
-#         :address              => 'smtp.gmail.com',
-#         :port                 => '587',
-#         :enable_starttls_auto => true,
-#         :user_name            => ENV['GMAIL_ACCOUNT'],
-#         :password             => ENV['GMAIL_PASSWORD'],
-#         :authentication       => :plain, # :plain, :login, :cram_md5, no auth by default
-#         :domain               => "localhost.localdomain" # the HELO domain provided by the client to the server
-#     }
-# }
