@@ -39,8 +39,6 @@ GEM
     polyamorous (0.6.4)
       activerecord (>= 3.0)
     polyglot (0.3.4)
-    pony (1.8)
-      mail (>= 2.0)
     rack (1.5.2)
     rack-flash3 (1.0.5)
       rack
@@ -106,8 +104,8 @@ DEPENDENCIES
   dotenv
   haml
   json
+  mail
   pg
-  pony
   rack-flash3
   rake
   redcarpet
