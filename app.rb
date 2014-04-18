@@ -227,7 +227,7 @@ post '/form/course/:id' do
     m.from = "#{params[:name]} <#{ENV['ADMIN_EMAIL']}>"
     m.to = emails
     m.cc = ENV['ADMIN_EMAIL']
-    m.reply_to = params[:email]
+    m.reply_to = emails + [params[:email]]
     m.subject = "Message from #{params[:name]} about #{@course.name}"
     m.body = "#{params[:message]}\n\n--\nThis message was sent to all SAAB tutors for #{@course.name}."
 
