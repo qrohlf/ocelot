@@ -3,8 +3,11 @@
     %form{method: 'post'}
         %input{:name => "_method", :type => "hidden", :value => "put"}
         .form-group
-            %label{for: "name"} Course Name
-            %input#name.form-control{placeholder: "Enter first name", type: "text", name: "name", value: form_remember(:name)}
+            %label{for: "name"} Course Number
+            %input#name.form-control{placeholder: "Enter name", type: "text", name: "name", value: form_remember(:name)}
+        .form-group
+            %label{for: "long_name"} Course Name
+            %input#long_name.form-control{placeholder: "Enter course long name", type: "text", name: "long_name", value: form_remember(:long_name)}
         .form-group
             %label{for: "tutors"} Tutors
             %input#tutors.form-control{type: 'text', name: "tutors", 'data-tokens' => form_remember(:tokens), value: form_remember(:tutors)}

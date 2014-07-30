@@ -1,6 +1,7 @@
 .row
     .col-md-6.col-md-offset-3
         %h1=@course.name
+        %h3=@course.long_name
         %p.lead="#{@course.tutors.count} #{'tutor'.pluralize(@course.tutors.count)}"
         %p.lead
             %a{href: "/form/course/#{@course.id}"} Email form

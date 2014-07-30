@@ -8,6 +8,6 @@
             - else
                 - link = "/form/course/#{course.id}"
             %a.list-group-item{href: link}
-                %h4.list-group-item-heading=course.name
+                %h4.list-group-item-heading="#{course.long_name} <small>#{course.name}</small>"
                 - count=course.tutors.count
                 %p.list-group-item-text="#{count} #{'tutor'.pluralize(count)}"

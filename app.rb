@@ -1,6 +1,6 @@
 #######################################
 # Routes
-# 
+#
 
 before do
     login User.find(session[:user]) if User.exists? session[:user]
@@ -9,19 +9,19 @@ end
 
 # Require admin permissions for all tutor and course paths
 [%r{^/tutor.*}, %r{^/courses/.*}, %r{^/manage.*}].each do |route|
-    before route do 
+    before route do
         require_admin
     end
 end
 
 get '/' do
-    md = Redcarpet::Markdown.new(Redcarpet::Render::HTML, 
-        autolink: true, 
-        fenced_code_blocks: true, 
+    md = Redcarpet::Markdown.new(Redcarpet::Render::HTML,
+        autolink: true,
+        fenced_code_blocks: true,
         lax_spacing: true,
         hard_wrap: true,
         tables: true)
-    
+
     # It's convenient to write the Readme in markdown, but silly to re-render it each time.
     # Instead, we cache it in tmp until the dyno gets killed or the Readme source is modified
     if (File.exists?('tmp/Readme.html') and File.mtime('tmp/Readme.html') >= File.mtime('Readme.md'))
@@ -45,12 +45,12 @@ get '/tutors/json' do
     Tutor.all.to_json(only: [:id], methods: [:name])
 end
 
-get '/tutors/new' do 
+get '/tutors/new' do
     page_title 'New Tutor'
     haml :new_tutor
 end
 
-post '/tutors/new' do 
+post '/tutors/new' do
     page_title 'New Tutor'
     courses = Array.new
     params[:courses].split(',').each do |c|
@@ -67,11 +67,11 @@ post '/tutors/new' do
     if !tutor.valid?
         flash.now[:info] = tutor.errors.map{|attr, msg| "#{attr.to_s.humanize} #{msg}"}.join("<br>")
         haml :new_tutor
-    else 
+    else
         flash[:info] = "New tutor created."
         redirect "/tutors/#{tutor.id}"
     end
-    
+
 end
 
 get '/tutors/:id' do
@@ -88,14 +88,14 @@ delete '/tutors/:id' do
     redirect '/tutors'
 end
 
-get '/tutors/:id/edit' do 
+get '/tutors/:id/edit' do
     @tutor = Tutor.find(params[:id])
     params.merge! @tutor.attributes.to_options
     params[:courses] = @tutor.courses.map(&:name).join(',')
     haml :edit_tutor
 end
 
-put '/tutors/:id/edit' do 
+put '/tutors/:id/edit' do
     page_title "Edit Tutor"
     @tutor = Tutor.find(params[:id])
     courses = Array.new
@@ -108,7 +108,7 @@ put '/tutors/:id/edit' do
     if !@tutor.valid?
         flash.now[:info] = @tutor.errors.map{|attr, msg| "#{attr.to_s.humanize} #{msg}"}.join("<br>")
         haml :new_tutor
-    else 
+    else
         flash[:info] = "Info for #{@tutor.name} updated."
         redirect "/tutors/#{@tutor.id}"
     end
@@ -136,18 +136,18 @@ post '/courses/new' do
     params[:tutors].split(',').each do |id|
         tutors << Tutor.find(id)
     end
-    course = Course.create(name: params[:name], tutors: tutors)
+    course = Course.create(name: params[:name], long_name: params[:long_name], tutors: tutors)
     if !course.valid?
         params[:tokens] = tutors.map{|t| {label: t.name, value: t.id}}.to_json
         flash.now[:info] = course.errors.map{|attr, msg| "#{attr.to_s.humanize} #{msg}"}.join("<br>")
         haml :new_course
-    else 
+    else
         flash[:info] = "Course #{course.name} created."
         redirect "/courses/#{course.id}"
     end
 end
 
-get '/courses/:id/edit' do 
+get '/courses/:id/edit' do
     page_title "Edit Course"
     @course = Course.find(params[:id])
     params.merge! @course.attributes.to_options
@@ -156,27 +156,27 @@ get '/courses/:id/edit' do
     haml :edit_course
 end
 
-put '/courses/:id/edit' do 
+put '/courses/:id/edit' do
     page_title "Edit Course"
     @course = Course.find(params[:id])
     tutors = Array.new
     params[:tutors].split(',').each do |id|
         tutors << Tutor.find(id)
     end
-    @course.update(name: params[:name], tutors: tutors)
+    @course.update(name: params[:name], long_name: params[:long_name], tutors: tutors)
     if !@course.valid?
         params[:tokens] = tutors.map{|t| {label: t.name, value: t.id}}.to_json
         flash.now[:info] = @course.errors.map{|attr, msg| "#{attr.to_s.humanize} #{msg}"}.join("<br>")
         haml :edit_course
-    else 
+    else
         flash[:info] = "Course #{@course.name} updated."
         redirect "/courses/#{@course.id}"
     end
 end
 
-delete '/courses/:id' do 
+delete '/courses/:id' do
     @course = Course.find(params[:id])
-    flash[:info] = "Course '#{@course.name}' deleted" 
+    flash[:info] = "Course '#{@course.name}' deleted"
     @course.destroy
     redirect '/courses'
 end
@@ -248,7 +248,7 @@ post '/users/new' do
     if !user.valid?
         flash.now[:info] = user.errors.map{|attr, msg| "#{attr.to_s.humanize} #{msg}"}.join("<br>")
         haml :signup, locals: {email: params[:email]}
-    else 
+    else
         flash.now[:info] = "User created. You may now log in as #{@user.email}."
         redirect '/'
     end
@@ -289,7 +289,7 @@ get '/manage/export' do
         Tutor.all.each do |t|
             csv << [t.lc_id, t.first_name, t.last_name, t.email, t.courses.map(&:name).join(', ')]
         end
-        empty_courses = Array.new 
+        empty_courses = Array.new
         Course.all.each do |c|
             empty_courses << c if c.tutors.count == 0
         end
@@ -300,7 +300,7 @@ get '/manage/export' do
     export
 end
 
-post '/manage/import' do 
+post '/manage/import' do
     new_tutors = 0
     updated_tutors = 0
     new_courses = 0
@@ -321,7 +321,7 @@ post '/manage/import' do
             updated_tutors += 1 if t.persisted?
             puts "updated #{t.name}" if t.persisted?
             t.update(
-                lc_id: attrs['lc_id'], 
+                lc_id: attrs['lc_id'],
                 first_name: attrs['first_name'],
                 last_name: attrs['last_name'],
                 email: attrs['email'],
@@ -384,7 +384,7 @@ end
 #######################################
 # Helpers
 
-helpers do 
+helpers do
     # set the page page_title
     def page_title(t)
         @title = "#{t} | #{settings.app_name}"
@@ -422,4 +422,3 @@ helpers do
         end
     end
 end
-
