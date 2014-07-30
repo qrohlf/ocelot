@@ -4,5 +4,8 @@
     .list-group
         - @tutors.each do |tutor|
             %a.list-group-item{href: "/tutors/#{tutor.id}"}
-                %h4.list-group-item-heading=tutor.name
+                %h4.list-group-item-heading
+                    =tutor.name
+                    -if tutor.inactive
+                        %span.label.label-default Inactive
                 %p.list-group-item-text=tutor.email

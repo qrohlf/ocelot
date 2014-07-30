@@ -6,12 +6,20 @@ class Tutor < ActiveRecord::Base
         presence: true,
         format: {with: /@/, allow_blank: true},
         uniqueness: {case_sensitive: false, allow_blank: true}
-    validates :lc_id, 
+    validates :lc_id,
         presence: {message: 'ID is required'},
         uniqueness: true,
         format: {with: /\d{6,7}/, message: 'ID must consist of 7 digits', allow_blank: true}
 
+    scope :active, -> { where(active: true) }
+
+    scope :inactive, -> { where(active: false) }
+
     def name
         "#{first_name} #{last_name}"
+    end
+
+    def inactive
+      !active
     end
 end

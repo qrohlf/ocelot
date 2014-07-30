@@ -17,6 +17,11 @@
         .form-group
             %label{for: "courses"} Courses
             %input#courses.form-control{type: 'text', name: "courses", value: form_remember(:courses)}
+        .checkbox
+            %label
+                %input{type: "hidden", name: "active", value: 'false'}
+                %input{type: "checkbox", name: "active", checked: true, value: 'true'}
+                Active
         %button.btn.btn-lg.btn-primary{type: "submit"} Submit
 - @scripts << "/js/vendor/typeahead/typeahead.bundle.min.js"
 - @scripts << "/js/vendor/bootstrap-tokenfield/bootstrap-tokenfield.js"

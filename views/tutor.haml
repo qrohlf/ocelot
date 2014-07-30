@@ -1,12 +1,15 @@
 .row
     .col-md-6.col-md-offset-3
-        %h1=@tutor.name
+        %h1
+            =@tutor.name
+            -if @tutor.inactive
+                %span.label.label-default Inactive
         %p.lead="#{glyph 'user'} #{"%07d" % @tutor.lc_id}"
         %p.lead="#{glyph 'send'} #{@tutor.email}"
         - count=@tutor.courses.count
         %p.lead="#{@tutor.name} tutors #{count} #{'course'.pluralize(count)}:"
 = haml :courses
-.row 
+.row
     .col-md-6.col-md-offset-3
         %a.btn.btn-primary{href: "/tutors/#{@tutor.id}/edit"} Edit
         %a.btn.btn-danger{'data-toggle' => 'modal', 'data-target' => '#confirmdelete'} Delete
@@ -21,4 +24,3 @@
                 %form.pull-right{method: 'post', id: 'deleteform', style: 'display: inline;'}
                     %input{:name => "_method", :type => "hidden", :value => "delete"}
                     %button.btn.btn-danger#confirmdeletebutton{type: 'submit'}="Delete #{@tutor.first_name}"
-

@@ -1,7 +1,7 @@
 .row
     .col-md-6.col-md-offset-3
         %h1=@course.name
-        %p.lead="There are #{@course.tutors.count} #{'tutor'.pluralize(@course.tutors.count)} available for this course"
+        %p.lead="There #{@tutors.count==1?"is":"are"} #{@tutors.count} #{'tutor'.pluralize(@tutors.count)} available for this course"
 .row
     .col-md-6.col-md-offset-3
         %h2 Email the tutors

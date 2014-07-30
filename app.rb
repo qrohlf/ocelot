@@ -37,8 +37,14 @@ end
 
 get '/tutors' do
     page_title "Tutors"
-    @tutors = Tutor.all.order(last_name: :asc, first_name: :asc)
+    @tutors = Tutor.active.order(last_name: :asc, first_name: :asc)
     haml :tutors, {locals: {title: 'All Tutors'}}
+end
+
+get '/tutors/inactive' do
+    page_title "Tutors"
+    @tutors = Tutor.inactive.order(last_name: :asc, first_name: :asc)
+    haml :tutors, {locals: {title: 'Inactive Tutors'}}
 end
 
 get '/tutors/json' do
@@ -62,7 +68,8 @@ post '/tutors/new' do
         last_name: params[:last_name],
         email: params[:email],
         lc_id: params[:lc_id],
-        courses: courses
+        courses: courses,
+        active: YAML.load(params[:active]) # "true" == true, "false" == false
     )
     if !tutor.valid?
         flash.now[:info] = tutor.errors.map{|attr, msg| "#{attr.to_s.humanize} #{msg}"}.join("<br>")
@@ -104,7 +111,8 @@ put '/tutors/:id/edit' do
         courses << Course.find_by(name: course) if Course.exists?(name: course)
     end
     params[:courses] = courses
-    @tutor.update(params.slice(:first_name, :last_name, :email, :lc_id, :courses))
+    params[:active] = YAML.load(params[:active]) # "true" == true, "false" == false
+    @tutor.update(params.slice(:first_name, :last_name, :email, :lc_id, :courses, :active))
     if !@tutor.valid?
         flash.now[:info] = @tutor.errors.map{|attr, msg| "#{attr.to_s.humanize} #{msg}"}.join("<br>")
         haml :new_tutor
@@ -190,7 +198,7 @@ end
 
 get '/form/course/:id' do
     @course = Course.find(params[:id])
-    @tutors = @course.tutors
+    @tutors = @course.tutors.active
     page_title @course.name
     haml :course_form
 end
@@ -198,6 +206,7 @@ end
 # todo send email
 post '/form/course/:id' do
     @course = Course.find(params[:id])
+    @tutors = @course.tutors.active
     page_title @course.name
 
     if params[:name].blank?
@@ -220,7 +229,7 @@ post '/form/course/:id' do
         return haml :course_form
     end
 
-    emails = @course.tutors.map(&:email)
+    emails = @tutors.map(&:email)
     # emails = @course.tutors.map{|t| "qrohlf+#{t.first_name}@gmail.com"} #useful for testing
 
     m = Mail.new

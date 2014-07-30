@@ -1,12 +1,15 @@
 # global settings go here
-configure do 
+configure do
     set :app_name, "Ocelot"
     # Navigation:
     # you can specify the url as a string
     # or you can pass a hash of other items
     # to create a dropdown
     set :nav_admin, {
-        'Tutors' => '/tutors',
+        'Tutors' => {
+            'Active' => '/tutors',
+            'Inactive' => '/tutors/inactive'
+        },
         'Courses' => '/courses',
         'Create New' => {
             'Tutor' => '/tutors/new',
