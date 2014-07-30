@@ -38,7 +38,7 @@ end
 get '/tutors' do
     page_title "Tutors"
     @tutors = Tutor.active.order(last_name: :asc, first_name: :asc)
-    haml :tutors, {locals: {title: 'All Tutors'}}
+    haml :tutors, {locals: {title: 'Active Tutors'}}
 end
 
 get '/tutors/inactive' do
