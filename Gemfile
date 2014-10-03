@@ -2,7 +2,7 @@ ruby "2.1.1"
 source 'https://rubygems.org'
 gem 'sinatra'
 gem 'haml'
-gem 'sinatra-contrib', require: 'sinatra/config_file'           
+gem 'sinatra-contrib', require: 'sinatra/config_file'
 gem "activerecord"
 gem "sinatra-activerecord", require: 'sinatra/activerecord'
 gem 'tux'
@@ -22,8 +22,9 @@ gem 'mail'
 group :development do
     gem "sqlite3"
     gem "shotgun"
+    gem "hirb"
 end
 
-group :production do 
+group :production do
     gem "pg"                        # Needed for postgresql on Heroku
 end

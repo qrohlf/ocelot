@@ -27,6 +27,7 @@ GEM
     dotenv (0.10.0)
     haml (4.0.5)
       tilt
+    hirb (0.7.2)
     i18n (0.6.9)
     json (1.8.1)
     mail (2.5.4)
@@ -103,6 +104,7 @@ DEPENDENCIES
   bcrypt-ruby
   dotenv
   haml
+  hirb
   json
   mail
   pg

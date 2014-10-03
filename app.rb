@@ -294,9 +294,9 @@ end
 
 get '/manage/export' do
     export = CSV.generate do |csv|
-        csv << ['lc_id', 'first_name', 'last_name', 'email', 'courses']
+        csv << Tutor.attribute_names + ['courses']
         Tutor.all.each do |t|
-            csv << [t.lc_id, t.first_name, t.last_name, t.email, t.courses.map(&:name).join(', ')]
+            csv << t.attributes.values + [t.courses.map(&:name).join(', ')]
         end
         empty_courses = Array.new
         Course.all.each do |c|
