@@ -106,19 +106,19 @@ put '/tutors/:id/edit' do
     page_title "Edit Tutor"
     @tutor = Tutor.find(params[:id])
     courses = Array.new
-    params[:courses].split(',').each do |c|
+    params["courses"].split(',').each do |c|
         course = c.strip
         courses << Course.find_by(name: course) if Course.exists?(name: course)
     end
-    params[:courses] = courses
-    params[:active] = YAML.load(params[:active]) # "true" == true, "false" == false
-    @tutor.update(params.slice(:first_name, :last_name, :email, :lc_id, :courses, :active))
-    if !@tutor.valid?
-        flash.now[:info] = @tutor.errors.map{|attr, msg| "#{attr.to_s.humanize} #{msg}"}.join("<br>")
-        haml :new_tutor
-    else
+    params["courses"] = courses
+    params["active"] = YAML.load(params[:active]) # "true" == true, "false" == false
+    @tutor.update_attributes(params.slice("first_name", "last_name", "email", "lc_id", "courses", "active"))
+    if @tutor.save
         flash[:info] = "Info for #{@tutor.name} updated."
         redirect "/tutors/#{@tutor.id}"
+    else
+        flash.now[:info] = @tutor.errors.map{|attr, msg| "#{attr.to_s.humanize} #{msg}"}.join("<br>")
+        haml :edit_tutor
     end
 end
 

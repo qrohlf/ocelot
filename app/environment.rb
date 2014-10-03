@@ -1,9 +1,9 @@
 # environment.rb
-# 
-# This file is where you should load all of your dependencies and 
+#
+# This file is where you should load all of your dependencies and
 # do any global environment setup (e.g. Dotenv.load)
 
-require 'rubygems' 
+require 'rubygems'
 require 'bundler/setup'
 # require all of the gems in the gemfile
 Bundler.require
@@ -41,6 +41,8 @@ ActiveRecord::Base.establish_connection(
   :database => db.path[1..-1],
   :encoding => 'utf8'
 )
+
+ActiveRecord::Base.logger = Logger.new(STDOUT)
 
 Mail.defaults do
   delivery_method :smtp, {
